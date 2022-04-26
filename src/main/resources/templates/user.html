@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="en" class="h-100"
+      xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Добрые руки</title>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+
+</head>
+<body class="d-flex h-100" onload="calcCost(); showOrderParts()">
+
+<div class="container d-flex w-100 h-100 p-3 mx-auto flex-column">
+        <header class="mb-auto">
+            <div class="d-flex flex-column flex-md-row align-items-center pb-3 mb-4 border-bottom">
+                    <a class=" fs-4 d-flex align-items-center text-dark text-decoration-none" th:text="${user.getSurname()} +' ' + ${user.getName()}"> Иванов Иван</a>
+
+                <nav class="d-inline-flex mt-2 mt-md-0 ms-md-auto">
+                    <div sec:authorize="!isAuthenticated()">
+                        <a class="me-3 py-2 text-dark text-decoration-none" href="/new">Регистрация</a>
+                        <a class="me-3 py-2 text-dark text-decoration-none" href="/login">Войти</a>
+                    </div>
+
+                    <div sec:authorize="hasRole('ROLE_USER')">
+                        <div class="dropdown">
+                            <a class="btn btn-secondary dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
+                                Меню
+                            </a>
+                            <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                                <li><a class="dropdown-item" href="/">Главная страница</a></li>
+                                <li><a class="dropdown-item" data-bs-toggle="modal" data-bs-target="#exampleModal" href="">
+                                    История заявок</a>
+                                </li>
+                                <li><a class="dropdown-item" href="/logout">Выйти</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </nav>
+            </div>
+        </header>
+
+    <main class="px-3">
+        <h2>Создание новой заявки</h2>
+        <form class="row g-3" th:method="POST" th:action="@{/orders}" th:object="${order}">
+            <div class="col-md-4">
+                <label for="orderAccommodation" class="form-label">Услуга</label>
+                <select class="form-select" id="orderAccommodation" required oninput="calcCost(); showOrderParts()" th:field="*{accommodationId}">
+                    <option th:each="accommodation : ${allAccommodations}"
+                            th:value="${accommodation.getId()}"
+                            th:data-cost="${accommodation.getCost()}"
+                            th:data-description="${accommodation.getDescription()}"
+                            th:text="${accommodation.getName()}">
+                    </option>
+                </select>
+            </div>
+            <div class="col-md-1">
+                <label for="orderAccommodationPrice" class="form-label">Цена</label>
+                <input type="text" class="form-control" id="orderAccommodationPrice" readonly>
+            </div>
+            <div class="col-md-1">
+                <label for="orderCount" class="form-label">Количество</label>
+                <input type="number" class="form-control" id="orderCount" required min="1" max="300" oninput="calcCost()" th:field="*{accommodationCount}">
+            </div>
+            <div class="col-md-1">
+                <label for="orderCost" class="form-label">Стоимость</label>
+                <input type="text" class="form-control" id="orderCost" readonly>
+            </div>
+            <div class="col-md-5">
+                <label for="orderAddress" class="form-label">Адрес</label>
+                <input type="text" class="form-control" id="orderAddress" required th:field="*{address}">
+            </div>
+            <div class="col-md-12">
+                <label for="orderAccommodationDescription" class="form-label">Описание услуги</label>
+                <input type="text" class="form-control" id="orderAccommodationDescription" readonly>
+            </div>
+            <div class="col-12">
+                <button class="btn btn-primary" type="button" id="accept_but" onclick="getPushButton()">Подтвердить</button>
+                <button class="btn btn-primary" type="submit" style="display: none" id="push_but">Отправить форму</button>
+            </div>
+        </form>
+
+    </main>
+
+    <footer class="mt-auto text-white-50">
+        <div th:replace="footer :: content"></div>
+    </footer>
+</div>
+            <!-- Modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">История заявок</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <ul>
+                    <li th:each="userOrder : ${allUserOrders}">
+                        Заявка №: <span th:text="${userOrder.getId()}"></span><br>
+                        Услуга: <span th:text="${userOrder.getAccommodation().getName()}"></span><br>
+                        Адрес: <span th:text="${userOrder.getAddress()}"></span><br>
+                        Статус: <span th:text="${userOrder.getStatus()}"></span><br>
+                        Оформлено: <span th:text="${userOrder.getStartDate()}"></span><br>
+                        Выполнено: <span th:text="${userOrder.getFinalDate()}"></span><br>
+                        Стоимость: <span th:text="${userOrder.getAccommodationCount()} * ${userOrder.getAccommodation().getCost()}"></span><br>
+                        <hr>
+                    </li>
+                </ul>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+<script>
+
+    var calcCost = function () {
+        var $select1 = document.getElementById('orderAccommodation')
+        var $number1 = document.getElementById('orderCount')
+        var $cost = document.getElementById('orderCost')
+
+        var $1 = $number1.value;
+        var $2 = $select1.options[$select1.value - 1].getAttribute('data-cost');
+
+        $cost.value = $1 * $2;
+    }
+
+    var showOrderParts = function (){
+        var $select1 = document.getElementById('orderAccommodation')
+        var $price = document.getElementById('orderAccommodationPrice')
+        var $description = document.getElementById('orderAccommodationDescription')
+
+        $price.value =  $select1.options[$select1.value - 1].getAttribute('data-cost');
+        $description.value =  $select1.options[$select1.value - 1].getAttribute('data-description');
+    }
+
+    var getPushButton =function () {
+        document.getElementById('push_but').style.display="block"
+        document.getElementById('accept_but').style.display="none"
+        document.getElementById('orderAccommodation').setAttribute("readonly", true)
+        document.getElementById('orderCount').setAttribute("readonly", true)
+        document.getElementById('orderAddress').setAttribute("readonly", true)
+    }
+</script>
+
+</html>

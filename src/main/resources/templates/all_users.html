@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+
+</head>
+<body>
+
+<div class="container">
+
+    <main>
+        <div class="pricing-header p-3 pb-md-4 mx-auto text-center">
+            <h1 class="display-4 fw-normal">Отчет: все пользователи</h1>
+        </div>
+        <div th:each="user : ${allUsers}" class="card mb-4 rounded-5 shadow-sm" data-bs-toggle="modal">
+            <div >
+                <div class="open row">
+                    <h5>Пользователь: </h5>
+                    <div class="col-1">№: <span th:text="${user.getId()}">1</span></div>
+                    <div class="col-3">Имя: <span th:text="${user.getName()}">Иван</span></div>
+                    <div class="col-3">Фамилия: <span th:text="${user.getSurname()}">Иванов</span></div>
+                    <div class="col-5">Номер телефона: <span th:text="${user.getPhoneNumber()}">+79348763399</span></div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+</div>
+
+</body>
+</html>

@@ -1,0 +1,193 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="Mark Otto, Jacob Thornton, and Bootstrap contributors">
+    <meta name="generator" content="Hugo 0.88.1">
+    <title>Operator menu</title>
+
+    <link rel="canonical" href="https://getbootstrap.com/docs/5.1/examples/pricing/">
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+
+    <!-- Bootstrap core CSS -->
+    <link href="../assets/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+        .open{
+            cursor: pointer;
+        }
+        .bd-placeholder-img {
+            font-size: 1.125rem;
+            text-anchor: middle;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            user-select: none;
+        }
+
+        @media (min-width: 768px) {
+            .bd-placeholder-img-lg {
+                font-size: 3.5rem;
+            }
+        }
+    </style>
+
+    <!-- Custom styles for this template -->
+    <link href="../static/operator_page.css" rel="stylesheet">
+</head>
+<body>
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+    <symbol id="check" viewBox="0 0 16 16">
+        <title>Check</title>
+        <path d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z"/>
+    </symbol>
+</svg>
+
+<div class="container d-flex w-100 h-100 p-3 mx-auto flex-column">
+
+    <header>
+        <div class="d-flex flex-column flex-md-row align-items-center pb-3 mb-4 border-bottom">
+            <a href="/" class="d-flex align-items-center text-dark text-decoration-none">
+                <span class="fs-4">ООО "Добрые руки"</span>
+            </a>
+
+            <nav class="d-inline-flex mt-2 mt-md-0 ms-md-auto">
+                <div sec:authorize="!isAuthenticated()">
+                    <a class="me-3 py-2 text-dark text-decoration-none" href="/new">Регистрация</a>
+                    <a class="me-3 py-2 text-dark text-decoration-none" href="/login">Войти</a>
+                </div>
+
+                <div sec:authorize="hasRole('ROLE_OPERATOR')">
+                    <div class="dropdown">
+                        <a class="btn btn-secondary dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
+                            Меню
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                            <li><a class="dropdown-item" href="/">Главная страница</a></li>
+                            <li><a class="dropdown-item" data-bs-toggle="modal" data-bs-target="#orderHistoryModal" href="">История заявок</a>
+                            </li>
+                            <li><a class="dropdown-item" data-bs-toggle="modal" data-bs-target="#reportModal" href="">Отчеты</a>
+                            </li>
+                            <li><a class="dropdown-item" href="/logout">Выйти</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <div class="pricing-header p-3 pb-md-4 mx-auto text-center">
+            <h1 class="display-4 fw-normal">Меню оператора</h1>
+        </div>
+            <div th:each="userOrder : ${allActiveOrders}" class="card mb-4 rounded-3 shadow-sm" data-bs-toggle="modal" th:data-bs-target="'#staticBackdrop' + ${userOrder.getId()}">
+                <div class="open row" th:data="${userOrder.getId()}">
+                    <div class="col">
+                        <h5>Заявка</h5>
+                        №: <span th:text="${userOrder.getId()}"></span><br>
+                        Услуга: <span th:text="${userOrder.getAccommodation().getName()}"></span><br>
+                        Адрес: <span th:text="${userOrder.getAddress()}"></span><br>
+                        Статус: <span th:text="${userOrder.getStatus()}"></span><br>
+                        Оформлено: <span th:text="${userOrder.getStartDate()}"></span><br>
+                        Выполнено: <span th:text="${userOrder.getFinalDate()}"></span><br>
+                    </div>
+                    <div class="col">
+                        <h5>Клиент</h5>
+                        Имя: <span th:text="${userOrder.getUser().getName()}"></span><br>
+                        Телефон : <span th:text="${userOrder.getUser().getPhoneNumber()}"></span><br>
+                        <h5>Исполнитель</h5>
+                        Название: <span th:if="${userOrder.getExecutor() != null}" th:text="${userOrder.getExecutor().getName()}"></span><br>
+                        Телефон: <span th:if="${userOrder.getExecutor() != null}" th:text="${userOrder.getExecutor().getPhoneNumber()}"></span>
+                    </div>
+                </div>
+            </div>
+    </main>
+
+    <div th:replace="footer :: content"></div>
+</div>
+
+<!-- Modal -->
+<div th:each="userOrder : ${allActiveOrders}" class="modal fade" th:id="'staticBackdrop' + ${userOrder.getId()}" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" th:text="'Изменение заказа №' + ${userOrder.getId()}" th:id="'staticBackdropLabel' + ${userOrder.getId()}">Modal title</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form th:method="POST" th:object="${changedOrder}" th:action="@{/updateOrder}">
+                    <input type="hidden" id="id" name="id" th:value="${userOrder.getId()}">
+                    <select th:name="status" th:id="status">
+                        <option th:each="ordStatus : ${statusEnum}" th:selected="${ordStatus == userOrder.getStatus()}" th:value="${ordStatus}" th:text="${ordStatus}"></option>
+                    </select>
+                    <select th:if="${userOrder.getExecutor() == null}" th:id="executorId" th:name="executorId">
+                        <option th:each="exec : ${allExecutors}" th:value="${exec.getId()}" th:text="${exec.getName()}"></option>
+                    </select>
+                    <input type="submit">
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="orderHistoryModal" tabindex="-1" aria-labelledby="orderHistoryModal" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="orderHistoryModalLabel">История заявок</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <ul>
+                    <li th:each="userOrder : ${allInactiveOrders}">
+                        Заявка №: <span th:text="${userOrder.getId()}"></span><br>
+                        Услуга: <span th:text="${userOrder.getAccommodation().getName()}"></span><br>
+                        Количество: <span th:text="${userOrder.getAccommodationCount()}"></span><br>
+                        Адрес: <span th:text="${userOrder.getAddress()}"></span><br>
+                        Статус: <span th:text="${userOrder.getStatus()}"></span><br>
+                        Оформлено: <span th:text="${userOrder.getStartDate()}"></span><br>
+                        Выполнено: <span th:text="${userOrder.getFinalDate()}"></span><br>
+                        Исполнитель: <span th:text="${userOrder.getExecutor().getName()}"></span><br>
+                        Стоимость: <span th:text="${userOrder.getAccommodationCount()} * ${userOrder.getAccommodation().getCost()}"></span><br>
+                        <hr>
+                    </li>
+                </ul>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="reportModal" tabindex="-1" aria-labelledby="reportModal" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="reportModalLabel">Выберите требуемый отчет</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <ul>
+                    <li><a target="_blank" href="/all_users">Все пользователи</a></li>
+                    <li><a target="_blank" href="/all_accommodations">Все услуги</a></li>
+                    <li><a target="_blank" href="/all_executors">Все исполнители</a></li>
+                    <li><a target="_blank" href="/all_orders">Все заявки</a></li>
+                </ul>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>
