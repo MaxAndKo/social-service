@@ -88,10 +88,8 @@ public class MyController {
     }
 
     @PostMapping("/new")
-    public String createCustomer(@ModelAttribute("newUser") User newUser){
-        newUser.setRole("ROLE_USER");
-        newUser.setPassword("{noop}"+newUser.getPassword());
-        userService.save(newUser);
+    public String createUser(@ModelAttribute("newUser") User newUser){
+        userService.saveNew(newUser);
         return "redirect:/login";
     }
 
