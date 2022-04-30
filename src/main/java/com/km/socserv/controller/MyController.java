@@ -33,6 +33,11 @@ public class MyController {
     @Autowired
     private ExecutorService executorService;
 
+    @GetMapping("/")
+    public String showIndex(){
+        return "index";
+    }
+
     @GetMapping("/check_role")
     public String checkRole(){
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();

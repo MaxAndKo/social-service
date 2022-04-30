@@ -33,6 +33,13 @@ public class UserService implements UserDetailsService {
         return true;
     }
 
+    public boolean usernameExist(String username){//мб доделать проверку существования такого логина
+        User user = userRepository.findByUsername(username);
+        if (user != null)
+            return true;
+        return false;
+    }
+
     public User getCurrentUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication != null) {
