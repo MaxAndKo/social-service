@@ -61,7 +61,7 @@
             </div>
             <div class="col-md-1">
                 <label for="orderCount" class="form-label">Количество</label>
-                    <input value="1" type="text" class="form-control" id="orderCount" required min="1" max="300" oninput="calcCost()" th:field="*{accommodationCount}">
+                <input value="1" type="number" class="form-control" id="orderCount" required min="1" max="300" oninput="calcCost(); checkCount()" th:field="*{accommodationCount}">
             </div>
             <div class="col-md-1">
                 <label for="orderCost" class="form-label">Стоимость</label>
@@ -139,12 +139,36 @@
     }
 
     var getPushButton =function () {
-        document.getElementById('push_but').style.display="block"
-        document.getElementById('accept_but').style.display="none"
-        document.getElementById('orderAccommodation').setAttribute("readonly", true)
-        document.getElementById('orderCount').setAttribute("readonly", true)
-        document.getElementById('orderAddress').setAttribute("readonly", true)
+        if (document.getElementById('orderCount').value <= 0) {
+            alert("Количество должно быть больше 0")
+        }
+        else {
+            if (document.getElementById('orderAddress').value.length <= 5){
+                alert("Адрес должен иметь блину больше 5 символов")
+            }
+            else {
+                document.getElementById('push_but').style.display = "block"
+                document.getElementById('accept_but').style.display = "none"
+                document.getElementById('orderAccommodation').setAttribute("readonly", true)
+                document.getElementById('orderCount').setAttribute("readonly", true)
+                document.getElementById('orderAddress').setAttribute("readonly", true)
+            }
+        }
     }
+
+    var checkCount = function (){
+        let orderCount = document.getElementById('orderCount')
+        let acceptBut = document.getElementById('accept_but')
+        console.log(orderCount.value)
+        if (isNaN(parseInt(orderCount.value)) || orderCount.value < 0)
+        {
+            acceptBut.disabled = true
+        }
+        else {
+            acceptBut.disabled = false
+        }
+    }
+
 </script>
 
 </html>
