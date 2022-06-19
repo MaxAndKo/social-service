@@ -61,7 +61,7 @@
             </div>
             <div class="col-md-1">
                 <label for="orderCount" class="form-label">Количество</label>
-                <input type="number" class="form-control" id="orderCount" required min="1" max="300" oninput="calcCost()" th:field="*{accommodationCount}">
+                    <input value="1" type="text" class="form-control" id="orderCount" required min="1" max="300" oninput="calcCost()" th:field="*{accommodationCount}">
             </div>
             <div class="col-md-1">
                 <label for="orderCost" class="form-label">Стоимость</label>

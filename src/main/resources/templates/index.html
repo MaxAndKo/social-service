@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" class="h-100">
+<html lang="en" class="h-100" xmlns:sec="http://www.w3.org/1999/xhtml">
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -19,7 +19,7 @@
   <main class="px-3">
     <h1>Добрые руки</h1>
     <p class="lead">Лучший выбор для ваших близких</p>
-    <p class="lead">
+    <p sec:authorize="!isAuthenticated()" class="lead">
       <a href="/new" class="btn btn-lg btn-secondary fw-bold border-black bg-white text-black">Воспользоваться</a>
     </p>
   </main>

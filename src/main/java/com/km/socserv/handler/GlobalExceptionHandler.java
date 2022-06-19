@@ -9,7 +9,7 @@ import java.sql.SQLException;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
-    @ExceptionHandler(value = Exception.class)
+    @ExceptionHandler(value = SQLException.class)
     public ModelAndView defaultErrorHandler(HttpServletRequest req, Exception e) throws Exception {
         return new ModelAndView("registration_error_by_username");
     }
